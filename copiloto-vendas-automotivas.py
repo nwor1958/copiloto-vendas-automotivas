@@ -70,8 +70,7 @@ if mensagem_usuario:
         st.error("Erro: Chave da API do Gemini não configurada.")
     else:
         st.chat_message("user").write(mensagem_usuario)
-        mensagem1 = {"role": "user", "content": mensagem_usuario}
-        st.session_state["lista_mensagens"].append(mensagem1)
+        st.session_state["lista_mensagens"].append({"role": "user", "content": mensagem_usuario})
         #Converte em formato SDK google-genai / papel = model e não assistant
         historico_formatado = []
         for m in st.session_state["lista_mensagens"]:
@@ -84,21 +83,20 @@ if mensagem_usuario:
             )
 
 #Chamada à API    
-try:
-    resposta_modelo = cliente_gemini.models.generate_content(
-        model="gemini-3.5-flash",
-        contents=historico_formatado,
-        config=types.GenerateContentConfig(
-            system_instruction=PROMPT_SISTEMA,
-            temperature=0.7,
-        ),
-    )
-    resposta_ia = resposta_modelo.text
+    try:
+        resposta_modelo = cliente_gemini.models.generate_content(
+            model="gemini-3.5-flash",
+            contents=historico_formatado,
+            config=types.GenerateContentConfig(
+                system_instruction=PROMPT_SISTEMA,
+                temperature=0.7,
+            ),
+        )
+        resposta_ia = resposta_modelo.text
     
     #Exibe e salva a resposta da IA
-    st.chat_message("assistant").write(resposta_ia)    
-    mensagem2 = {"role": "assistant", "content": resposta_ia}
-    st.session_state["lista_mensagens"].append(mensagem2)
+        st.chat_message("assistant").write(resposta_ia)    
+        st.session_state["lista_mensagens"].append({"role": "assistant", "content": resposta_ia})
 
-except Exception as e:
-    st.error(f"Ocorreu um erro ao gerar a resposta: {e}")
+    except Exception as e:
+        st.error(f"Ocorreu um erro ao gerar a resposta: {e}")
